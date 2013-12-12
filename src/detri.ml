@@ -1,6 +1,6 @@
 #load "unix.cma"
 
-let detri_dir = "../mga-planning"
+let detri_default_dir = ".detri"
 
 let lang = "en"  (* language: English *)
 
@@ -144,6 +144,15 @@ let padl size c s =
   let len = str_len s in
   let n = size - len in
   String.make n c ^ s
+
+let list_assoc_replace k v lst =
+  let rec aux acc = function
+  | [] -> failwith "list_assoc_replace"
+  | ((x,_) as p)::tl ->
+      if x = k then List.rev_append acc ((x,v) :: tl)
+      else aux (p::acc) tl
+  in
+  aux [] lst
 
 let color color_name s =
   let r = "\027[00m" in  (* reset *)
@@ -476,16 +485,26 @@ let print_events evs =
 
 let () =
   let args = List.tl (Array.to_list Sys.argv) in
-  match args with
-  | [] ->
-      let year = current_year () in
-      let year_lbl = pad (23*4-3) ' ' (string_of_int year) in
-      Printf.printf " %s\n" (color_s month_label_color year_lbl);
-      print_newline ();
-      let evs = read_events detri_dir in
-      print_cal (cal evs ~year);
-      print_events evs;
-  
-  | _ ->
-      usage 0
+  let params = [
+    ("detri_dir", detri_default_dir)
+  ] in
+  let rec parse_args params = function
+  | "--detri-dir" :: detri_dir :: args ->
+      let params = list_assoc_replace "detri_dir" detri_dir params in
+      parse_args params args
+  | "--help"::[] | "-help"::[] | "-h"::[] -> usage 0
+  | [] -> params
+  | _ -> usage 1
+  in
+  let params = parse_args params args in
+  let get_param param = List.assoc param params in
+  let year = current_year () in
+  let year_lbl = pad (23*4-3) ' ' (string_of_int year) in
+  Printf.printf " %s\n" (color_s month_label_color year_lbl);
+  print_newline ();
+  let detri_dir = get_param "detri_dir" in
+  let evs = read_events detri_dir in
+  print_cal (cal evs ~year);
+  print_events evs;
+;;
 
