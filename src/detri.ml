@@ -27,8 +27,9 @@ let day_label_color = "bold_rand"
 let month_label_color = "black_on_rand"
 *)
 
-let usage () =
-  Printf.printf "Usage:\n%s\n" Sys.argv.(0)
+let usage ec =
+  Printf.printf "Usage:\n%s\n" Sys.argv.(0);
+  exit ec
 
 let month_langs = [
   "en", [|
@@ -486,5 +487,5 @@ let () =
       print_events evs;
   
   | _ ->
-      usage ()
+      usage 0
 
