@@ -359,7 +359,7 @@ let of_range s =
 
 let current_year () =
   let t = Unix.localtime (Unix.time ()) in
-  (t.Unix.tm_year  + 1900)
+  string_of_int (t.Unix.tm_year  + 1900)
 
 type day = {
   d: int;
@@ -395,8 +395,9 @@ let cal evs ~year =
   let empty = [| [| |] |] in
   let months = Array.make 12 empty in
   let t = Unix.gmtime 0.0 in
+  let y = int_of_string year in
   for mon = 0 to 11 do
-    months.(mon) <- make_month t evs year mon;
+    months.(mon) <- make_month t evs y mon;
   done;
   (months)
 
@@ -486,9 +487,13 @@ let print_events evs =
 let () =
   let args = List.tl (Array.to_list Sys.argv) in
   let params = [
-    ("detri_dir", detri_default_dir)
+    ("detri_dir", detri_default_dir);
+    ("year", current_year ());
   ] in
   let rec parse_args params = function
+  | "--year" :: year :: args ->
+      let params = list_assoc_replace "year" year params in
+      parse_args params args
   | "--detri-dir" :: detri_dir :: args ->
       let params = list_assoc_replace "detri_dir" detri_dir params in
       parse_args params args
@@ -498,8 +503,8 @@ let () =
   in
   let params = parse_args params args in
   let get_param param = List.assoc param params in
-  let year = current_year () in
-  let year_lbl = pad (23*4-3) ' ' (string_of_int year) in
+  let year = get_param "year" in
+  let year_lbl = pad (23*4-3) ' ' year in
   Printf.printf " %s\n" (color_s month_label_color year_lbl);
   print_newline ();
   let detri_dir = get_param "detri_dir" in
