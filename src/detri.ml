@@ -1,6 +1,7 @@
 #load "unix.cma"
 
 let detri_default_dir = ".detri"
+let detri_default_dir = "../mga-planning"  (* devel-dir *)
 
 let lang = "en"  (* language: English *)
 
