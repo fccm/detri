@@ -485,13 +485,12 @@ let print_events evs =
       (color `normal content)
   ) evs
 
-let () =
-  let args = List.tl (Array.to_list Sys.argv) in
-  let params = [
-    ("detri_dir", detri_default_dir);
-    ("year", current_year ());
-  ] in
-  let rec parse_args params = function
+let default_params = [
+  ("detri_dir", detri_default_dir);
+  ("year", current_year ());
+]
+
+let rec parse_args params = function
   | "--year" :: year :: args ->
       let params = list_assoc_replace "year" year params in
       parse_args params args
@@ -501,8 +500,10 @@ let () =
   | "--help"::[] | "-help"::[] | "-h"::[] -> usage 0
   | [] -> params
   | _ -> usage 1
-  in
-  let params = parse_args params args in
+
+let () =
+  let args = List.tl (Array.to_list Sys.argv) in
+  let params = parse_args default_params args in
   let get_param param = List.assoc param params in
   let year = get_param "year" in
   let year_lbl = pad (23*4-3) ' ' year in
