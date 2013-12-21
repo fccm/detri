@@ -485,6 +485,11 @@ let print_events evs =
       (color `normal content)
   ) evs
 
+let print_year_header ~year =
+  let year_lbl = pad (23*4-3) ' ' year in
+  Printf.printf " %s\n" (color_s month_label_color year_lbl);
+  print_newline ()
+
 let default_params = [
   ("detri_dir", detri_default_dir);
   ("year", current_year ());
@@ -506,11 +511,9 @@ let () =
   let params = parse_args default_params args in
   let get_param param = List.assoc param params in
   let year = get_param "year" in
-  let year_lbl = pad (23*4-3) ' ' year in
-  Printf.printf " %s\n" (color_s month_label_color year_lbl);
-  print_newline ();
   let detri_dir = get_param "detri_dir" in
   let evs = read_events detri_dir in
+  print_year_header ~year;
   print_cal (cal evs ~year);
   print_events evs;
 ;;
