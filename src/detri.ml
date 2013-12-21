@@ -188,6 +188,13 @@ let color color_name s =
   | `black_on_magenta   -> "\027[30;45m" ^ s ^ r
   | `black_on_cyan      -> "\027[30;46m" ^ s ^ r
 
+  | `black_on_bold_red       -> "\027[30;101m" ^ s ^ r
+  | `black_on_bold_green     -> "\027[30;102m" ^ s ^ r
+  | `black_on_bold_yellow    -> "\027[30;103m" ^ s ^ r
+  | `black_on_bold_blue      -> "\027[30;104m" ^ s ^ r
+  | `black_on_bold_magenta   -> "\027[30;105m" ^ s ^ r
+  | `black_on_bold_cyan      -> "\027[30;106m" ^ s ^ r
+
 
 let color_rand () =
   rand_take [|
@@ -260,6 +267,12 @@ let color_of_string = function
   | "black_on_blue"     -> `black_on_blue
   | "black_on_magenta"  -> `black_on_magenta
   | "black_on_cyan"     -> `black_on_cyan
+  | "black_on_bold_red"      -> `black_on_bold_red
+  | "black_on_bold_green"    -> `black_on_bold_green
+  | "black_on_bold_yellow"   -> `black_on_bold_yellow
+  | "black_on_bold_blue"     -> `black_on_bold_blue
+  | "black_on_bold_magenta"  -> `black_on_bold_magenta
+  | "black_on_bold_cyan"     -> `black_on_bold_cyan
   | "rand"          -> color_rand ()
   | "bold_rand"     -> bold_rand ()
   | "bg_rand"       -> bg_rand ()
