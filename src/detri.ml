@@ -29,7 +29,11 @@ let month_label_color = "black_on_rand"
 *)
 
 let usage ec =
-  Printf.printf "Usage:\n%s\n" Sys.argv.(0);
+  Printf.printf "Usage:\n %s
+    --year <year>
+    --detri-dir <detri_dir>
+    --help | -help | -h
+  " Sys.argv.(0);
   exit ec
 
 let month_langs = [
