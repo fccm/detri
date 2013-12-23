@@ -241,6 +241,16 @@ let black_on_rand () =
     `black_on_cyan;
   |]
 
+let black_on_bold_rand () =
+  rand_take [|
+    `black_on_bold_red;
+    `black_on_bold_green;
+    `black_on_bold_yellow;
+    `black_on_bold_blue;
+    `black_on_bold_magenta;
+    `black_on_bold_cyan;
+  |]
+
 
 let color_of_string = function
   | "normal"        -> `normal
@@ -281,6 +291,7 @@ let color_of_string = function
   | "bold_rand"     -> bold_rand ()
   | "bg_rand"       -> bg_rand ()
   | "black_on_rand" -> black_on_rand ()
+  | "black_on_bold_rand"  -> black_on_bold_rand ()
   | _ -> invalid_arg "color_of_string"
 
 
