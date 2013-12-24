@@ -378,11 +378,11 @@ let of_range_y s =
   }
 
 let of_range s =
-  try of_range_d s
+  try of_range_y s
   with _ ->
     try of_range_m s
     with _ ->
-      try of_range_y s
+      try of_range_d s
       with _ ->
         invalid_arg "of_range"
 
