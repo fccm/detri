@@ -5,18 +5,27 @@ let lang = "en"  (* language: English *)
 let default_detri_dir = ".detri"
 let default_detri_dir = "../mga-planning"  (* devel-dir *)
 
-let ev_color = "black_on_cyan"
-let day_label_color = "cyan"
-let month_label_color = "black_on_cyan"
+let default_event_color = "black_on_bold_cyan"
+let default_day_label_color = "bold_cyan"
+let default_month_label_color = "black_on_cyan"
+
+let event_color (event_color, _, _) = (event_color)
+let day_label_color (_, day_label_color, _) =  (day_label_color)
+let month_label_color (_, _, month_label_color) = (month_label_color)
 
 
 let usage ec =
   Printf.printf "Usage:\n %s
     --year <year>
     --detri-dir <detri_dir>
+    --event-color <event_color>
+    --day-label-color <day_label_color>
+    --month-label-color <month_label_color>
+    --print-avail-colors
     --help | -help | -h
   " Sys.argv.(0);
   exit ec
+
 
 let month_langs = [
   "en", [|
@@ -280,6 +289,24 @@ let color_of_string = function
 let color_s color_name s =
   color (color_of_string color_name) s
 
+
+let print_avail_colors ec =
+  print_endline "
+  The base colors are:
+    red, green, yellow, blue, magenta, cyan
+    (and rand for random)
+
+  With these colors, here is what's available:
+  * bg_<color>
+  * bold_<color>
+  * black_on_<color>
+  * black_on_bold_<color>
+
+  (bg stands for background)
+";
+  exit ec
+
+
 let chop_extension s =
   try Filename.chop_extension s
   with Invalid_argument "Filename.chop_extension" -> s
@@ -416,25 +443,25 @@ let cal evs ~year =
   done;
   (months)
 
-let print_month_label is =
+let print_month_label is cs =
   List.iter (fun i ->
     let mon = pad 20 ' ' month.(i) in
-    Printf.printf " %s  " (color_s month_label_color mon)
+    Printf.printf " %s  " (color_s (month_label_color cs) mon)
   ) is;
   print_newline ()
 
-let print_day_label is =
+let print_day_label is cs =
   List.iter (fun _ ->
     Array.iter (fun i ->
-      Printf.printf " %s" (color_s day_label_color days.(i))
+      Printf.printf " %s" (color_s (day_label_color cs) days.(i))
     ) days_order
     ; print_string "  "
   ) is;
   print_newline ()
 
-let print_mon m is =
-  print_month_label is;
-  print_day_label is;
+let print_mon m is cs =
+  print_month_label is cs;
+  print_day_label is cs;
   for w = 0 to pred 6 do
     List.iter (fun i ->
       for d = 0 to pred 7 do
@@ -445,7 +472,7 @@ let print_mon m is =
             Printf.printf " %s" (color `red "XX")
         | { d; ev = Some _ } ->
             Printf.printf " %s"
-              (color_s ev_color (padl 2 ' ' (string_of_int d)))
+              (color_s (event_color cs) (padl 2 ' ' (string_of_int d)))
         | { d; ev = None } ->
             Printf.printf " %2d" d
       done
@@ -454,9 +481,9 @@ let print_mon m is =
     ; print_newline ()
   done
 
-let print_cal m =
+let print_cal cs m =
   List.iter (fun mon_row ->
-    print_mon m mon_row
+    print_mon m mon_row cs
   ) [
       [ 0;  1;  2;  3 ];
       [ 4;  5;  6;  7 ];
@@ -490,7 +517,7 @@ let read_events dir =
   in
   (List.map f ev_files)
 
-let print_events evs ~year =
+let print_events cs evs ~year =
   let _year = int_of_string year in
   let filter_date (date, _) =
     let y, _, _ = dt_of_string date in
@@ -501,40 +528,77 @@ let print_events evs ~year =
   let evs = List.sort compare_date evs in
   List.iter (fun (date, content) ->
     Printf.printf "%s: %s\n"
-      (color_s ev_color date)
+      (color_s (event_color cs) date)
       (color `normal content)
   ) evs
 
-let print_year_header ~year =
+let print_year_header cs ~year =
   let year_lbl = pad (23*4-3) ' ' year in
-  Printf.printf " %s\n" (color_s month_label_color year_lbl);
+  Printf.printf " %s\n" (color_s (month_label_color cs) year_lbl);
   print_newline ()
+
 
 let default_params = [
   ("detri_dir", default_detri_dir);
   ("year", current_year ());
+  ("event_color", default_event_color);
+  ("day_label_color", default_day_label_color);
+  ("month_label_color", default_month_label_color);
 ]
+
 
 let rec parse_args params = function
   | "--year" :: year :: args ->
       let params = list_assoc_replace "year" year params in
       parse_args params args
+
   | "--detri-dir" :: detri_dir :: args ->
       let params = list_assoc_replace "detri_dir" detri_dir params in
       parse_args params args
+
+  | "--event-color" :: event_color :: args ->
+      let params = list_assoc_replace "event_color" event_color params in
+      parse_args params args
+
+  | "--day-label-color" :: day_label_color :: args ->
+      let params =
+        list_assoc_replace "day_label_color" day_label_color params
+      in
+      parse_args params args
+
+  | "--month-label-color" :: month_label_color :: args ->
+      let params =
+        list_assoc_replace "month_label_color" month_label_color params
+      in
+      parse_args params args
+
+  | "--print-avail-colors" :: _ ->
+      print_avail_colors 0
+
   | "--help"::[] | "-help"::[] | "-h"::[] -> usage 0
+
   | [] -> params
+
   | _ -> usage 1
+
 
 let () =
   let args = List.tl (Array.to_list Sys.argv) in
   let params = parse_args default_params args in
   let get_param param = List.assoc param params in
+  Random.self_init ();
+
   let year = get_param "year" in
   let detri_dir = get_param "detri_dir" in
+
+  let event_color = get_param "event_color" in
+  let day_label_color = get_param "day_label_color" in
+  let month_label_color = get_param "month_label_color" in
+  let cs = (event_color, day_label_color, month_label_color) in
+
   let evs = read_events detri_dir in
-  print_year_header ~year;
-  print_cal (cal evs ~year);
-  print_events evs ~year;
+  print_year_header cs ~year;
+  print_cal cs (cal evs ~year);
+  print_events cs evs ~year;
 ;;
 
