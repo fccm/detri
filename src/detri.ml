@@ -1,9 +1,9 @@
 #load "unix.cma"
 
+let lang = "en"  (* language: English *)
+
 let default_detri_dir = ".detri"
 let default_detri_dir = "../mga-planning"  (* devel-dir *)
-
-let lang = "en"  (* language: English *)
 
 let ev_color = "black_on_cyan"
 let day_label_color = "cyan"
