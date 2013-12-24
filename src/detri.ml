@@ -318,10 +318,14 @@ let to_string t =
     (t.Unix.tm_mon + 1)
     (t.Unix.tm_mday)
 
-let of_string s =
+let dt_of_string s =
   let year, month, day =
     Scanf.sscanf s "%d-%d-%d" (fun y m d -> y, m, d)
   in
+  (year, month, day)
+
+let du_of_string s =
+  let year, month, day = dt_of_string s in
   { (Unix.gmtime 0.0) with
     Unix.tm_year = year - 1900;
     Unix.tm_mon = month - 1;
@@ -504,8 +508,14 @@ let read_events dir =
   in
   (List.map f ev_files)
 
-let print_events evs =
+let print_events evs ~year =
+  let _year = int_of_string year in
+  let filter_date (date, _) =
+    let y, _, _ = dt_of_string date in
+    (y = _year)
+  in
   let compare_date (date1, _) (date2, _) = compare date1 date2 in
+  let evs = List.filter filter_date evs in
   let evs = List.sort compare_date evs in
   List.iter (fun (date, content) ->
     Printf.printf "%s: %s\n"
@@ -543,6 +553,6 @@ let () =
   let evs = read_events detri_dir in
   print_year_header ~year;
   print_cal (cal evs ~year);
-  print_events evs;
+  print_events evs ~year;
 ;;
 
