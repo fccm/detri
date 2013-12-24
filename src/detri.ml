@@ -1,7 +1,7 @@
 #load "unix.cma"
 
-let detri_default_dir = ".detri"
-let detri_default_dir = "../mga-planning"  (* devel-dir *)
+let default_detri_dir = ".detri"
+let default_detri_dir = "../mga-planning"  (* devel-dir *)
 
 let lang = "en"  (* language: English *)
 
@@ -529,7 +529,7 @@ let print_year_header ~year =
   print_newline ()
 
 let default_params = [
-  ("detri_dir", detri_default_dir);
+  ("detri_dir", default_detri_dir);
   ("year", current_year ());
 ]
 
