@@ -9,24 +9,6 @@ let ev_color = "black_on_cyan"
 let day_label_color = "cyan"
 let month_label_color = "black_on_cyan"
 
-(*
-let ev_color = "black_on_yellow"
-let day_label_color = "yellow"
-let month_label_color = "black_on_yellow"
-*)
-
-(*
-let ev_color = "black_on_green"
-let day_label_color = "bold_green"
-let month_label_color = "black_on_green"
-*)
-
-(*
-let () = Random.self_init ()
-let ev_color = "black_on_rand"
-let day_label_color = "bold_rand"
-let month_label_color = "black_on_rand"
-*)
 
 let usage ec =
   Printf.printf "Usage:\n %s
