@@ -1,1 +1,1 @@
-Unmaintained packages adoption campaign    (developers, packagers)
+mga4: Unmaintained packages adoption campaign    (developers, packagers)
