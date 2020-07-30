@@ -309,7 +309,7 @@ let print_avail_colors ec =
 
 let chop_extension s =
   try Filename.chop_extension s
-  with Invalid_argument "Filename.chop_extension" -> s
+  with Invalid_argument _ -> s
 
 let days = Array.map (shorten 2) days
 
@@ -504,9 +504,9 @@ let print_cal cs m =
 let load_file fn =
   let ic = open_in fn in
   let n = in_channel_length ic in
-  let s = String.create n in
+  let s = Bytes.create n in
   really_input ic s 0 n;
-  (s)
+  (Bytes.to_string s)
 
 let read_events dir =
   let ev_files = Array.to_list (Sys.readdir dir) in
