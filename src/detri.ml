@@ -517,6 +517,11 @@ let read_events dir =
   in
   (List.map f ev_files)
 
+let read_events dir =
+  try read_events dir
+  with Sys_error _ -> []
+
+
 let print_events cs evs ~year =
   let _year = int_of_string year in
   let filter_date (date, _) =
